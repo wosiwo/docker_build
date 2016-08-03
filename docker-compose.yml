@@ -1,0 +1,43 @@
+nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    links:
+      - "php"
+    volumes:
+      - /data/webroot/:/data
+
+php:
+    build: ./php
+    ports:
+      - "9000:9000"
+      - "8800:8800"
+      - "9903:9903"
+      - "9904:9904"
+      - "9905:9905"
+    links:
+      - "mysql"
+    volumes:
+      - /data/webroot/:/data
+    tty: true
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+
+
+mysql:
+    build: ./mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - /data/webroot/mysqldata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+
+redis:
+    build: ./redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - /data/webroot/mysqldata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
